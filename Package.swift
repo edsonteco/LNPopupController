@@ -2,36 +2,17 @@
 // LNPopupController:4.5.11
 
 import PackageDescription
-import Foundation
 
-let packageBase = URL(filePath: Context.packageDirectory, directoryHint: .isDirectory)
-
-extension URL {
-	var targetRelativePath: String {
-		var rv = path
-		rv.replace(packageBase.path, with: "")
-		rv = rv.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-		return String(rv.dropFirst("LNPopupController/".count))
-	}
-}
-
-//This recursively iterates all directories under LNPopupController/Private and adds them as header search paths.
-let start = URL(filePath: "LNPopupController/LNPopupController/Private", relativeTo: packageBase)
-var settings: [PackageDescription.CSetting] = [.headerSearchPath(start.targetRelativePath)]
-if let enumerator = FileManager.default.enumerator(at: start, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
-	for case let fileURL as URL in enumerator {
-		do {
-			let fileAttributes = try fileURL.resourceValues(forKeys:[.isDirectoryKey])
-			if fileAttributes.isDirectory! {
-				settings.append(.headerSearchPath(fileURL.targetRelativePath))
-			}
-		} catch { fatalError(error.localizedDescription) }
-	}
-}
-
-//if true {
-//	fatalError(settings.map { String(describing: $0) }.joined(separator: " "))
-//}
+let settings: [PackageDescription.CSetting] = [
+	.headerSearchPath("LNPopupController/Private"),
+	.headerSearchPath("LNPopupController/Private/TransitionAnimators"),
+	.headerSearchPath("LNPopupController/Private/Appearance"),
+	.headerSearchPath("LNPopupController/Private/Utils"),
+	.headerSearchPath("LNPopupController/Private/Titles"),
+	.headerSearchPath("LNPopupController/Private/Swift"),
+	.headerSearchPath("LNPopupController/Private/Minimization"),
+	.headerSearchPath("LNPopupController/Private/GestureRecognizers"),
+]
 
 let package = Package(
 	name: "LNPopupController",
