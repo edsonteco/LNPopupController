@@ -792,14 +792,13 @@ LNPopupBarProgressViewStyle _LNPopupResolveProgressViewStyleFromProgressViewStyl
 		height = self.bounds.size.height;
 	}
 	
-	CGFloat cornerRadius;
+	CGFloat cornerRadius = _contentView.cornerRadius / 2.5;
 	if(@available(iOS 26.0, *))
 	{
-		cornerRadius = [_contentView.effectView effectiveRadiusForCorner:UIRectCornerAllCorners];
-	}
-	else
-	{
-		cornerRadius = _contentView.cornerRadius / 2.5;
+		if([_contentView.effectView respondsToSelector:@selector(effectiveRadiusForCorner:)])
+		{
+			cornerRadius = [_contentView.effectView effectiveRadiusForCorner:UIRectCornerAllCorners];
+		}
 	}
 	
 	CGFloat progressViewHeight = [_progressView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
@@ -831,7 +830,15 @@ LNPopupBarProgressViewStyle _LNPopupResolveProgressViewStyleFromProgressViewStyl
 		if(@available(iOS 26.0, *))
 		{
 			_progressView.clipsToBounds = YES;
-			_progressView.cornerConfiguration = [UICornerConfiguration capsuleConfiguration];
+			if([_progressView respondsToSelector:@selector(setCornerConfiguration:)] &&
+			   [UICornerConfiguration respondsToSelector:@selector(capsuleConfiguration)])
+			{
+				_progressView.cornerConfiguration = [UICornerConfiguration capsuleConfiguration];
+			}
+			else
+			{
+				_progressView.layer.cornerRadius = MIN(CGRectGetWidth(_progressView.bounds), CGRectGetHeight(_progressView.bounds)) / 2.0;
+			}
 		}
 		
 		_progressView.trackTintColor = UIColor.tertiaryLabelColor;
@@ -850,7 +857,16 @@ LNPopupBarProgressViewStyle _LNPopupResolveProgressViewStyleFromProgressViewStyl
 		
 		if(@available(iOS 26.0, *))
 		{
-			_progressView.cornerConfiguration = [UICornerConfiguration configurationWithRadius:[UICornerRadius fixedRadius:0.0]];
+			if([_progressView respondsToSelector:@selector(setCornerConfiguration:)] &&
+			   [UICornerRadius respondsToSelector:@selector(fixedRadius:)] &&
+			   [UICornerConfiguration respondsToSelector:@selector(configurationWithRadius:)])
+			{
+				_progressView.cornerConfiguration = [UICornerConfiguration configurationWithRadius:[UICornerRadius fixedRadius:0.0]];
+			}
+			else
+			{
+				_progressView.layer.cornerRadius = 0.0;
+			}
 		}
 		
 		_progressView.trackImage = [UIImage new];

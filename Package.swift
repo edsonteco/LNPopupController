@@ -51,7 +51,16 @@ let package = Package(
 		.target(
 			name: "LNPopupController",
 			dependencies: ["LNPopupController-ObjC"],
-			path: "LNPopupController+Swift")
+			path: "LNPopupController+Swift"),
+		.target(
+			name: "LNPopupCornerTestSupport",
+			dependencies: ["LNPopupController-ObjC"],
+			path: "Tests/CornerTestSupport",
+			publicHeadersPath: "include"),
+		.testTarget(
+			name: "LNPopupCornerTests",
+			dependencies: ["LNPopupCornerTestSupport", "LNPopupController-SwiftPrivate"],
+			path: "Tests/CornerTests")
 	],
 	cxxLanguageStandard: .gnucxx20
 )
